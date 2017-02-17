@@ -8,7 +8,9 @@ modest mock is a tool to create mocks from go interfaces for your tests
 - *Type safe* - You are using Go because you like static checking, you
   shouldn't have to give that up in your tests so no reflection or
 `interface{}`
-- Easy to use assertions that dont interfere with how you like to write tests
+- *Not a framework*, it does not prescribe how you write your tests
+- No dependencies required in your app, just generate the code once.
+- Easy to use assertions
 
 Given
 
