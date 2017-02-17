@@ -6,8 +6,9 @@ Modest mock is a tool to create mocks from go interfaces for your tests
 
 - *Simple* - the usage is just $PATH_TO_INTERFACE $NAME_OF_INTERFACE
 - *Type safe* - You are using Go because you like static checking, you
-  shouldn't have to give that up in your tests
-- Easy to use assertions
+  shouldn't have to give that up in your tests so no reflection or
+`interface{}`
+- Easy to use assertions that dont interfere with how you like to write tests
 
 Given
 
