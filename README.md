@@ -21,6 +21,11 @@ type Store interface{
 I would expect to use the mock in my test like:
 
 ```go
+mockStore := NewMockStore()
+
+thingUnderTest := NewThing(mockStore)
+thing.DoIt("expected firstname", "smith")
+
 if mockStore.Calls.Save.firstname != "expected firstname" {
   t.Error("Didnt't call Store with correct firstname")
 }
