@@ -1,10 +1,10 @@
 # modest mock
 
-Modest mock is a tool to create mocks from go interfaces for your tests
+modest mock is a tool to create mocks from go interfaces for your tests
 
 # Aims
 
-- *Simple* - the usage is just $PATH_TO_INTERFACE $NAME_OF_INTERFACE
+- *Simple* - the usage is just `PATH_TO_INTERFACE` `NAME_OF_INTERFACE`
 - *Type safe* - You are using Go because you like static checking, you
   shouldn't have to give that up in your tests so no reflection or
 `interface{}`
@@ -28,6 +28,6 @@ if mockStore.Calls.Save.firstname != "expected firstname" {
 
 - Easy to set return values too
 
-`mockStore.Returns.Save.err = errors.New("Simulating save failure`
+`mockStore.Returns.Save.err = errors.New("Simulating save failure")`
 
 I haven't written anything yet, but aspirations are nice.
