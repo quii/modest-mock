@@ -13,7 +13,7 @@ func main() {
 	src := `
 package main
 type Store interface{
-	Save(firstname, lastname) (err error)
+	Save(firstname, lastname string) (err error)
 }
 `
 
@@ -35,6 +35,11 @@ type Store interface{
 				for _, x := range method.Names {
 					fmt.Println(x)
 				}
+			}
+		case *ast.FieldList:
+			fmt.Println("number of fields", x.NumFields())
+			for _, field := range x.List {
+				fmt.Println(field)
 			}
 		}
 		return true
