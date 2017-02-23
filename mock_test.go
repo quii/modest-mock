@@ -82,6 +82,30 @@ func TestNew(t *testing.T) {
 		},
 
 		{
+			Name:          "Return values",
+			InterfaceName: "Store",
+			Src: `
+						package main
+						type Store interface{
+							Delete(id int) (success bool)
+						}
+		`,
+			ExpectedMock: Mock{
+				Name: "Store",
+				Methods: map[string]Method{
+					"Save": {
+						Arguments: []Value{
+							{"id", "int"},
+						},
+						ReturnValues: []Value{
+							{"success", "bool"},
+						},
+					},
+				},
+			},
+		},
+
+		{
 			Name:        "Invalid go code returns an error",
 			Src:         `function poo() { console.log("lolz"); }`,
 			ExpectError: &ParseFailError{},
