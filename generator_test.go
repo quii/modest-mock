@@ -2,21 +2,22 @@ package modestmock
 
 import (
 	"fmt"
-	"os"
-	"testing"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
+	"os"
 	"strings"
+	"testing"
 )
 
 func TestGenerateMockCode(t *testing.T) {
 
 	scenarios := []struct {
-		interfaceName string
+		interfaceName    string
 		interfacePath    string
 		expectedMockPath string
 	}{
 		{"Store", "simple.go", "simple_mock.go"},
+		{"Returns", "returns.go", "returns_mock.go"},
 	}
 
 	for _, s := range scenarios {
@@ -45,7 +46,7 @@ func openTestFile(t *testing.T, path string) string {
 
 	b, err := ioutil.ReadAll(f)
 
-	if err != nil{
+	if err != nil {
 		t.Fatal(err)
 	}
 

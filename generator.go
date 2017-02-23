@@ -9,6 +9,11 @@ import (
 const mockStructTemplate = `package {{.Package}}
 
 type {{.Name}}Mock struct {
+{{- if .HasReturnValues }}
+	Returns struct {
+		ffs int
+	}
+{{end}}
 }
 `
 
@@ -41,7 +46,7 @@ func generateMockStruct(mock Mock) (string, error) {
 	}
 
 	var buffer bytes.Buffer
-	err = tmpl.Execute(&buffer, mock)
+	err = tmpl.Execute(&buffer, &mock)
 
 	if err != nil {
 		return "", err
