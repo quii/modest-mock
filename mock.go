@@ -37,7 +37,6 @@ func New(src io.Reader, name string) (mock Mock, err error) {
 		return mock, &InterfaceNotFoundError{name}
 	}
 
-	fmt.Println("blah")
 	//ast.Print(fset, obj)
 
 	//switch x := obj.Decl.(type) {
@@ -53,24 +52,41 @@ func New(src io.Reader, name string) (mock Mock, err error) {
 	//}
 
 	//// Inspect the AST and print all identifiers and literals.
+
+	mock.Methods = make(map[string]Method)
+
+	var currentMethodName string
+
 	ast.Inspect(f, func(n ast.Node) bool {
 		switch x := n.(type) {
 
 		case *ast.InterfaceType:
-			ast.Print(fset, x)
+			fmt.Println("hit an interface")
+			//ast.Print(fset, x)
 
 			for _, method := range x.Methods.List {
 				fmt.Println(method)
 
 				for _, x := range method.Names {
-					fmt.Println(x)
+					fmt.Println("method name", x)
+					currentMethodName = x.Name
+
+					ast.Inspect(method, func(n ast.Node) bool {
+						switch x := n.(type) {
+						case *ast.FieldList:
+							for _, field := range x.List {
+								field.Type
+								fmt.Println("i want to add", field, "as arguments to", currentMethodName)
+
+							}
+						}
+						return true
+					})
 				}
+
 			}
-			case *ast.FieldList:
-				fmt.Println("number of fields", x.NumFields())
-				for _, field := range x.List {
-					fmt.Println(field)
-				}
+			return true
+
 		}
 		return true
 	})
