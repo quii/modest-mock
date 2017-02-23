@@ -17,7 +17,7 @@ func TestNew(t *testing.T) {
 		ExpectError   error
 	}{
 		{
-			Name:          "No return values, named arg",
+			Name:          "No return values, one arg",
 			InterfaceName: "Store",
 			Src: `
 						package main
@@ -31,6 +31,28 @@ func TestNew(t *testing.T) {
 					"Save": {
 						Arguments: []Value{
 							{"age", "int"},
+						},
+					},
+				},
+			},
+		},
+
+		{
+			Name:          "No return values, two args same type",
+			InterfaceName: "Store",
+			Src: `
+						package main
+						type Store interface{
+							Save(age, height int)
+						}
+		`,
+			ExpectedMock: Mock{
+				Name: "Store",
+				Methods: map[string]Method{
+					"Save": {
+						Arguments: []Value{
+							{"age", "int"},
+							{"height", "int"},
 						},
 					},
 				},

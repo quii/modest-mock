@@ -37,22 +37,6 @@ func New(src io.Reader, name string) (mock Mock, err error) {
 		return mock, &InterfaceNotFoundError{name}
 	}
 
-	//ast.Print(fset, obj)
-
-	//switch x := obj.Decl.(type) {
-	//case *ast.TypeSpec:
-	//	switch y := x.Type.(type) {
-	//	case *ast.InterfaceType:
-	//		//ast.Print(fset, y)
-	//
-	//		for _, x := range y.Methods.List {
-	//			ast.Print(fset, x)
-	//		}
-	//	}
-	//}
-
-	//// Inspect the AST and print all identifiers and literals.
-
 	mock.Methods = make(map[string]Method)
 	mock.Name = name
 
@@ -63,10 +47,8 @@ func New(src io.Reader, name string) (mock Mock, err error) {
 
 		case *ast.InterfaceType:
 			for _, method := range x.Methods.List {
-				fmt.Println(method)
 
 				for _, x := range method.Names {
-					fmt.Println("method name", x)
 					currentMethodName = x.Name
 
 					ast.Inspect(method, func(n ast.Node) bool {
@@ -74,12 +56,14 @@ func New(src io.Reader, name string) (mock Mock, err error) {
 						case *ast.FieldList:
 							for _, field := range x.List {
 
-								argument := Value{
-									field.Names[0].Name, //todo: iterate here for each argument
-									fmt.Sprintf("%v", field.Type),
+								var arguments []Value
+								for _, f := range field.Names {
+									arguments = append(arguments, Value{
+										f.Name, fmt.Sprintf("%v", field.Type),
+									})
 								}
 								mock.Methods[currentMethodName] = Method{
-									Arguments: []Value{argument},
+									Arguments: arguments,
 								}
 							}
 						}
