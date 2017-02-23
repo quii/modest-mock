@@ -14,17 +14,22 @@ func TestNew(t *testing.T) {
 		InterfaceName string
 		Src           string
 		ExpectedMock  Mock
-		ExpectedErr   error
+		ExpectError   bool
 	}{
+		{
+			Name:        "Invalid go code returns an error",
+			Src:         `function poo() { console.log("lolz"); }`,
+			ExpectError: true,
+		},
 		{
 			Name:          "Interface with named arguments and return values",
 			InterfaceName: "Store",
 			Src: `
-				package main
-				type Store interface{
-					Save(firstname, lastname string) (err error)
-				}
-`,
+						package main
+						type Store interface{
+							Save(firstname, lastname string) (err error)
+						}
+		`,
 			ExpectedMock: Mock{
 				Name: "Store",
 				Methods: map[string]Method{
@@ -39,14 +44,17 @@ func TestNew(t *testing.T) {
 					},
 				},
 			},
-			ExpectedErr: nil,
 		},
 	}
 
 	for _, s := range scenarios {
 		t.Run(s.Name, func(t *testing.T) {
 			mock, err := New(strings.NewReader(s.Src), s.InterfaceName)
-			assert.Equal(t, s.ExpectedErr, err)
+
+			if s.ExpectError {
+				assert.Error(t, err)
+			}
+
 			assert.Equal(t, s.ExpectedMock, mock)
 		})
 	}

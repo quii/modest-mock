@@ -6,6 +6,7 @@ import (
 	"go/parser"
 	"go/token"
 	"io"
+	"errors"
 )
 
 type Value struct {
@@ -21,6 +22,8 @@ type Mock struct {
 	Name    string
 	Methods map[string]Method
 }
+
+var badCodeErr = errors.New("Bad code you stupid poo")
 
 func New(src io.Reader, name string) (mock Mock, err error) {
 
