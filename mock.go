@@ -33,40 +33,44 @@ func New(src io.Reader, name string) (mock Mock, err error) {
 
 	obj := f.Scope.Lookup(name)
 
-	if obj==nil{
+	if obj == nil {
 		return mock, &InterfaceNotFoundError{name}
 	}
 
 	fmt.Println("blah")
-	ast.Print(fset, obj)
+	//ast.Print(fset, obj)
 
-	switch x:= obj.Decl.(type){
-	case *ast.TypeSpec:
-		switch y := x.Type.(type) {
-		case *ast.InterfaceType:
-			ast.Print(fset, y)
-		}
-	}
+	//switch x := obj.Decl.(type) {
+	//case *ast.TypeSpec:
+	//	switch y := x.Type.(type) {
+	//	case *ast.InterfaceType:
+	//		//ast.Print(fset, y)
+	//
+	//		for _, x := range y.Methods.List {
+	//			ast.Print(fset, x)
+	//		}
+	//	}
+	//}
 
-	// Inspect the AST and print all identifiers and literals.
+	//// Inspect the AST and print all identifiers and literals.
 	ast.Inspect(f, func(n ast.Node) bool {
 		switch x := n.(type) {
 
 		case *ast.InterfaceType:
 			ast.Print(fset, x)
 
-			//for _, method := range x.Methods.List {
-			//	fmt.Println(method)
-			//
-			//	for _, x := range method.Names {
-			//		fmt.Println(x)
-			//	}
-			//}
-			//case *ast.FieldList:
-			//	fmt.Println("number of fields", x.NumFields())
-			//	for _, field := range x.List {
-			//		fmt.Println(field)
-			//	}
+			for _, method := range x.Methods.List {
+				fmt.Println(method)
+
+				for _, x := range method.Names {
+					fmt.Println(x)
+				}
+			}
+			case *ast.FieldList:
+				fmt.Println("number of fields", x.NumFields())
+				for _, field := range x.List {
+					fmt.Println(field)
+				}
 		}
 		return true
 	})

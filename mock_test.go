@@ -17,34 +17,32 @@ func TestNew(t *testing.T) {
 		ExpectError   error
 	}{
 		{
+			Name:          "No return values, named arg",
+			InterfaceName: "Store",
+			Src: `
+						package main
+						type Store interface{
+							Save(firstname string)
+						}
+		`,
+			ExpectedMock: Mock{
+				Name: "Store",
+				Methods: map[string]Method{
+					"Save": {
+						Arguments: []Value{
+							{"firstname", "string"},
+						},
+					},
+				},
+			},
+		},
+
+		{
 			Name:        "Invalid go code returns an error",
 			Src:         `function poo() { console.log("lolz"); }`,
 			ExpectError: &ParseFailError{},
 		},
-		//{
-		//	Name:          "Valid go code but interface missing",
-		//	InterfaceName: "NotStore",
-		//	Src: `
-		//				package main
-		//				type Store interface{
-		//					Save(firstname, lastname string) (err error)
-		//				}
-		//`,
-		//	ExpectedMock: Mock{
-		//		Name: "Store",
-		//		Methods: map[string]Method{
-		//			"Save": {
-		//				Arguments: []Value{
-		//					{"firstname", "string"},
-		//					{"lastname", "string"},
-		//				},
-		//				ReturnValues: []Value{
-		//					{"err", "error"},
-		//				},
-		//			},
-		//		},
-		//	},
-		//},
+
 		{
 			Name:          "Valid go code but interface missing",
 			InterfaceName: "NotStore",
