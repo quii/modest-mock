@@ -77,9 +77,18 @@ func addMethod(method *ast.Field, name string, mock Mock) {
 
 func getValues(list *ast.FieldList) (values []Value) {
 	for _, field := range list.List {
+
+		fieldType := fmt.Sprintf("%v", field.Type)
+
+		if len(field.Names) == 0 {
+			values = append(values, Value{
+				"", fieldType,
+			})
+		}
+
 		for _, f := range field.Names {
 			values = append(values, Value{
-				f.Name, fmt.Sprintf("%v", field.Type),
+				f.Name, fieldType,
 			})
 		}
 	}

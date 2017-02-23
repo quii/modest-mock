@@ -82,7 +82,7 @@ func TestNew(t *testing.T) {
 		},
 
 		{
-			Name:          "Return values",
+			Name:          "Named return values",
 			InterfaceName: "Store",
 			Src: `
 						package main
@@ -99,6 +99,30 @@ func TestNew(t *testing.T) {
 						},
 						ReturnValues: []Value{
 							{"success", "bool"},
+						},
+					},
+				},
+			},
+		},
+
+		{
+			Name:          "Anonymous return values",
+			InterfaceName: "Store",
+			Src: `
+						package main
+						type Store interface{
+							Delete(id int) bool
+						}
+		`,
+			ExpectedMock: Mock{
+				Name: "Store",
+				Methods: map[string]Method{
+					"Delete": {
+						Arguments: []Value{
+							{"id", "int"},
+						},
+						ReturnValues: []Value{
+							{"", "bool"},
 						},
 					},
 				},
