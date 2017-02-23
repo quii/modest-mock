@@ -29,8 +29,9 @@ func TestGenerateMockCode(t *testing.T) {
 			t.Fatal("problem creating mock called", s.interfaceName, "from", s.interfacePath, err)
 		}
 
-		generatedCode := GenerateMockCode(mock)
+		generatedCode, err := GenerateMockCode(mock)
 
+		assert.NoError(t, err)
 		assert.Equal(t, expectedMock, generatedCode)
 	}
 }
