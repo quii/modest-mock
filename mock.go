@@ -1,5 +1,7 @@
 package modest_mock
 
+import "io"
+
 type Value struct {
 	Name, Type string
 }
@@ -9,7 +11,11 @@ type Method struct {
 	ReturnValues []Value
 }
 
-type Stub struct {
+type Mock struct {
 	Name    string
 	Methods map[string]Method
+}
+
+func New(src io.Reader) (Mock, error) {
+	return Mock{}, nil
 }
