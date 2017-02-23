@@ -14,36 +14,47 @@ func TestNew(t *testing.T) {
 		InterfaceName string
 		Src           string
 		ExpectedMock  Mock
-		ExpectError   bool
+		ExpectError   error
 	}{
 		{
 			Name:        "Invalid go code returns an error",
 			Src:         `function poo() { console.log("lolz"); }`,
-			ExpectError: true,
+			ExpectError: &ParseFailError{},
 		},
+		//{
+		//	Name:          "Valid go code but interface missing",
+		//	InterfaceName: "NotStore",
+		//	Src: `
+		//				package main
+		//				type Store interface{
+		//					Save(firstname, lastname string) (err error)
+		//				}
+		//`,
+		//	ExpectedMock: Mock{
+		//		Name: "Store",
+		//		Methods: map[string]Method{
+		//			"Save": {
+		//				Arguments: []Value{
+		//					{"firstname", "string"},
+		//					{"lastname", "string"},
+		//				},
+		//				ReturnValues: []Value{
+		//					{"err", "error"},
+		//				},
+		//			},
+		//		},
+		//	},
+		//},
 		{
-			Name:          "Interface with named arguments and return values",
-			InterfaceName: "Store",
+			Name:          "Valid go code but interface missing",
+			InterfaceName: "NotStore",
 			Src: `
 						package main
 						type Store interface{
 							Save(firstname, lastname string) (err error)
 						}
 		`,
-			ExpectedMock: Mock{
-				Name: "Store",
-				Methods: map[string]Method{
-					"Save": {
-						Arguments: []Value{
-							{"firstname", "string"},
-							{"lastname", "string"},
-						},
-						ReturnValues: []Value{
-							{"err", "error"},
-						},
-					},
-				},
-			},
+			ExpectError: &InterfaceNotFoundError{},
 		},
 	}
 
@@ -51,8 +62,8 @@ func TestNew(t *testing.T) {
 		t.Run(s.Name, func(t *testing.T) {
 			mock, err := New(strings.NewReader(s.Src), s.InterfaceName)
 
-			if s.ExpectError {
-				assert.Error(t, err)
+			if s.ExpectError != nil {
+				assert.IsType(t, s.ExpectError, err)
 			}
 
 			assert.Equal(t, s.ExpectedMock, mock)
