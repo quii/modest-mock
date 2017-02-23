@@ -6,6 +6,9 @@ import (
 )
 
 const mockTemplate = `package {{.Package}}
+
+type {{.Name}}Mock struct {
+}
 `
 
 func GenerateMockCode(mock Mock) (string, error) {
