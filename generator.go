@@ -9,11 +9,17 @@ import (
 const mockStructTemplate = `package {{.Package}}
 
 type {{.Name}}Mock struct {
-{{- if .HasReturnValues }}
+{{ if .HasReturnValues -}}
 	Returns struct {
-		ffs int
+		{{ range $method, $arguments := .ReturnValues -}}
+		{{ $method }} struct {
+			{{range $arg := $arguments -}}
+			{{ $arg.Name }} {{ $arg.Type }}
+			{{end -}}
+		}
+		{{end -}}
 	}
-{{end}}
+{{end -}}
 }
 `
 
@@ -67,7 +73,7 @@ func generateFields(values []Value) string {
 
 const mockMethodTemplate = `
 func ({{.ReceiverVar}} *{{.Receiver}}) {{.Name}}{{.Arguments}} {
-
+{{.Returns}}
 }
 `
 
@@ -78,13 +84,25 @@ func generateMethod(receiver string, methodName string, method Method) (string, 
 		return "", err
 	}
 
+	receiverVarName := strings.ToLower(string(receiver[0]))
+
+	returnStatement := ""
+	if len(method.ReturnValues) > 0 {
+		var returns []string
+		for _, r := range method.ReturnValues {
+			returns = append(returns, receiverVarName+".Returns."+methodName+"."+r.Name)
+		}
+		returnStatement = "\treturn " + strings.Join(returns, ", ")
+	}
+
 	viewModel := struct {
-		ReceiverVar, Receiver, Name, Arguments string
+		ReceiverVar, Receiver, Name, Arguments, Returns string
 	}{
-		ReceiverVar: strings.ToLower(string(receiver[0])),
+		ReceiverVar: receiverVarName,
 		Receiver:    receiver,
 		Name:        methodName,
 		Arguments:   generateFields(method.Arguments),
+		Returns:     returnStatement,
 	}
 
 	var buffer bytes.Buffer

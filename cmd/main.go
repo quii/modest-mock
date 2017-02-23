@@ -33,5 +33,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("%+v", mock)
+	generatedMock, err := modestmock.GenerateMockCode(mock)
+
+	if err != nil {
+		log.Printf("problem generating mock code from %v %v", mock, err)
+		os.Exit(1)
+	}
+
+	fmt.Print(generatedMock)
 }
