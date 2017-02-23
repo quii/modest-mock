@@ -19,6 +19,7 @@ type Method struct {
 
 type Mock struct {
 	Name    string
+	Imports []string
 	Methods map[string]Method
 }
 
@@ -39,6 +40,7 @@ func New(src io.Reader, name string) (mock Mock, err error) {
 
 	mock.Methods = make(map[string]Method)
 	mock.Name = name
+	mock.Imports = getImports(f.Imports)
 
 	ast.Inspect(f, func(n ast.Node) bool {
 		switch x := n.(type) {
@@ -53,6 +55,14 @@ func New(src io.Reader, name string) (mock Mock, err error) {
 		return true
 	})
 
+	return
+}
+
+func getImports(importSpec []*ast.ImportSpec) (imports []string) {
+
+	for _, i := range importSpec {
+		imports = append(imports, i.Path.Value)
+	}
 	return
 }
 

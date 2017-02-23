@@ -129,16 +129,20 @@ func TestNew(t *testing.T) {
 			},
 		},
 		{
-			Name:          "Non primative types",
+			Name:          "Non primative types with imports",
 			InterfaceName: "Channel",
 			Src: `
 						package main
+
+						import "github.com/streadway/amqp"
+
 						type Channel interface{
 							QueueDeclare(name string, args amqp.Table) (amqp.Queue, error)
 						}
 		`,
 			ExpectedMock: Mock{
-				Name: "Channel",
+				Name:    "Channel",
+				Imports: []string{`"github.com/streadway/amqp"`},
 				Methods: map[string]Method{
 					"QueueDeclare": {
 						Arguments: []Value{
