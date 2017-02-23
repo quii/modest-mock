@@ -93,7 +93,7 @@ func TestNew(t *testing.T) {
 			ExpectedMock: Mock{
 				Name: "Store",
 				Methods: map[string]Method{
-					"Save": {
+					"Delete": {
 						Arguments: []Value{
 							{"id", "int"},
 						},

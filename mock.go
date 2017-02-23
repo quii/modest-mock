@@ -53,20 +53,17 @@ func New(src io.Reader, name string) (mock Mock, err error) {
 
 					ast.Inspect(method, func(n ast.Node) bool {
 						switch x := n.(type) {
-						case *ast.FieldList:
-							var arguments []Value
+						case *ast.FuncType:
 
-							for _, field := range x.List {
-								for _, f := range field.Names {
-									arguments = append(arguments, Value{
-										f.Name, fmt.Sprintf("%v", field.Type),
-									})
-								}
+							m := Method{
+								Arguments: getValues(x.Params),
 							}
 
-							mock.Methods[currentMethodName] = Method{
-								Arguments: arguments,
+							if x.Results != nil {
+								m.ReturnValues = getValues(x.Results)
 							}
+
+							mock.Methods[currentMethodName] = m
 						}
 						return true
 					})
@@ -79,5 +76,16 @@ func New(src io.Reader, name string) (mock Mock, err error) {
 		return true
 	})
 
+	return
+}
+
+func getValues(list *ast.FieldList) (values []Value) {
+	for _, field := range list.List {
+		for _, f := range field.Names {
+			values = append(values, Value{
+				f.Name, fmt.Sprintf("%v", field.Type),
+			})
+		}
+	}
 	return
 }
