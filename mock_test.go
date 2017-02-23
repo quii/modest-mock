@@ -22,7 +22,7 @@ func TestNew(t *testing.T) {
 			Src: `
 						package main
 						type Store interface{
-							Save(firstname string)
+							Save(age int)
 						}
 		`,
 			ExpectedMock: Mock{
@@ -30,7 +30,7 @@ func TestNew(t *testing.T) {
 				Methods: map[string]Method{
 					"Save": {
 						Arguments: []Value{
-							{"firstname", "string"},
+							{"age", "int"},
 						},
 					},
 				},

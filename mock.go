@@ -54,6 +54,7 @@ func New(src io.Reader, name string) (mock Mock, err error) {
 	//// Inspect the AST and print all identifiers and literals.
 
 	mock.Methods = make(map[string]Method)
+	mock.Name = name
 
 	var currentMethodName string
 
@@ -61,9 +62,6 @@ func New(src io.Reader, name string) (mock Mock, err error) {
 		switch x := n.(type) {
 
 		case *ast.InterfaceType:
-			fmt.Println("hit an interface")
-			//ast.Print(fset, x)
-
 			for _, method := range x.Methods.List {
 				fmt.Println(method)
 
@@ -75,9 +73,14 @@ func New(src io.Reader, name string) (mock Mock, err error) {
 						switch x := n.(type) {
 						case *ast.FieldList:
 							for _, field := range x.List {
-								field.Type
-								fmt.Println("i want to add", field, "as arguments to", currentMethodName)
 
+								argument := Value{
+									field.Names[0].Name, //todo: iterate here for each argument
+									fmt.Sprintf("%v", field.Type),
+								}
+								mock.Methods[currentMethodName] = Method{
+									Arguments: []Value{argument},
+								}
 							}
 						}
 						return true
