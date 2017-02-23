@@ -60,6 +60,28 @@ func TestNew(t *testing.T) {
 		},
 
 		{
+			Name:          "No return values, two args different types",
+			InterfaceName: "Store",
+			Src: `
+						package main
+						type Store interface{
+							Save(age int, name string)
+						}
+		`,
+			ExpectedMock: Mock{
+				Name: "Store",
+				Methods: map[string]Method{
+					"Save": {
+						Arguments: []Value{
+							{"age", "int"},
+							{"name", "string"},
+						},
+					},
+				},
+			},
+		},
+
+		{
 			Name:        "Invalid go code returns an error",
 			Src:         `function poo() { console.log("lolz"); }`,
 			ExpectError: &ParseFailError{},

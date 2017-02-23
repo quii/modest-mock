@@ -54,17 +54,18 @@ func New(src io.Reader, name string) (mock Mock, err error) {
 					ast.Inspect(method, func(n ast.Node) bool {
 						switch x := n.(type) {
 						case *ast.FieldList:
-							for _, field := range x.List {
+							var arguments []Value
 
-								var arguments []Value
+							for _, field := range x.List {
 								for _, f := range field.Names {
 									arguments = append(arguments, Value{
 										f.Name, fmt.Sprintf("%v", field.Type),
 									})
 								}
-								mock.Methods[currentMethodName] = Method{
-									Arguments: arguments,
-								}
+							}
+
+							mock.Methods[currentMethodName] = Method{
+								Arguments: arguments,
 							}
 						}
 						return true
