@@ -1,4 +1,4 @@
-package modest_mock
+package modestmock
 
 import "fmt"
 
