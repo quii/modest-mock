@@ -10,13 +10,15 @@ import (
 func TestNew(t *testing.T) {
 
 	scenarios := []struct {
-		Name         string
-		Src          string
-		ExpectedMock Mock
-		ExpectedErr  error
+		Name          string
+		InterfaceName string
+		Src           string
+		ExpectedMock  Mock
+		ExpectedErr   error
 	}{
 		{
-			Name: "Interface with named arguments and return values",
+			Name:          "Interface with named arguments and return values",
+			InterfaceName: "Store",
 			Src: `
 				package main
 				type Store interface{
@@ -43,8 +45,7 @@ func TestNew(t *testing.T) {
 
 	for _, s := range scenarios {
 		t.Run(s.Name, func(t *testing.T) {
-			mock, err := New(strings.NewReader(s.Src))
-
+			mock, err := New(strings.NewReader(s.Src), s.InterfaceName)
 			assert.Equal(t, s.ExpectedErr, err)
 			assert.Equal(t, s.ExpectedMock, mock)
 		})

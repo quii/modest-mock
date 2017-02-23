@@ -16,6 +16,6 @@ type Mock struct {
 	Methods map[string]Method
 }
 
-func New(src io.Reader) (Mock, error) {
+func New(src io.Reader, name string) (Mock, error) {
 	return Mock{}, nil
 }
