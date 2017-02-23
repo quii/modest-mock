@@ -130,6 +130,37 @@ func TestNew(t *testing.T) {
 		},
 
 		{
+			Name:          "Multiple methods",
+			InterfaceName: "Store",
+			Src: `
+						package main
+						type Store interface{
+							Save(firstname, lastname string)
+							Delete(id int) bool
+						}
+		`,
+			ExpectedMock: Mock{
+				Name: "Store",
+				Methods: map[string]Method{
+					"Save": {
+						Arguments: []Value{
+							{"firstname", "string"},
+							{"lastname", "string"},
+						},
+					},
+					"Delete": {
+						Arguments: []Value{
+							{"id", "int"},
+						},
+						ReturnValues: []Value{
+							{"", "bool"},
+						},
+					},
+				},
+			},
+		},
+
+		{
 			Name:        "Invalid go code returns an error",
 			Src:         `function poo() { console.log("lolz"); }`,
 			ExpectError: &ParseFailError{},
