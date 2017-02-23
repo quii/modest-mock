@@ -26,7 +26,8 @@ func TestNew(t *testing.T) {
 						}
 		`,
 			ExpectedMock: Mock{
-				Name: "Store",
+				Name:    "Store",
+				Package: "main",
 				Methods: map[string]Method{
 					"Save": {
 						Arguments: []Value{
@@ -47,7 +48,8 @@ func TestNew(t *testing.T) {
 						}
 		`,
 			ExpectedMock: Mock{
-				Name: "Store",
+				Name:    "Store",
+				Package: "main",
 				Methods: map[string]Method{
 					"Save": {
 						Arguments: []Value{
@@ -69,7 +71,8 @@ func TestNew(t *testing.T) {
 						}
 		`,
 			ExpectedMock: Mock{
-				Name: "Store",
+				Name:    "Store",
+				Package: "main",
 				Methods: map[string]Method{
 					"Save": {
 						Arguments: []Value{
@@ -91,7 +94,8 @@ func TestNew(t *testing.T) {
 						}
 		`,
 			ExpectedMock: Mock{
-				Name: "Store",
+				Name:    "Store",
+				Package: "main",
 				Methods: map[string]Method{
 					"Delete": {
 						Arguments: []Value{
@@ -115,7 +119,8 @@ func TestNew(t *testing.T) {
 						}
 		`,
 			ExpectedMock: Mock{
-				Name: "Store",
+				Name:    "Store",
+				Package: "main",
 				Methods: map[string]Method{
 					"Delete": {
 						Arguments: []Value{
@@ -142,6 +147,7 @@ func TestNew(t *testing.T) {
 		`,
 			ExpectedMock: Mock{
 				Name:    "Channel",
+				Package: "main",
 				Imports: []string{`"github.com/streadway/amqp"`},
 				Methods: map[string]Method{
 					"QueueDeclare": {
@@ -169,7 +175,8 @@ func TestNew(t *testing.T) {
 						}
 		`,
 			ExpectedMock: Mock{
-				Name: "Store",
+				Name:    "Store",
+				Package: "main",
 				Methods: map[string]Method{
 					"Save": {
 						Arguments: []Value{

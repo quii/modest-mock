@@ -20,13 +20,13 @@ type Method struct {
 type Mock struct {
 	Name    string
 	Imports []string
+	Package string
 	Methods map[string]Method
 }
 
 func New(src io.Reader, name string) (mock Mock, err error) {
 
-	// Create the AST by parsing src.
-	fset := token.NewFileSet() // positions are relative to fset
+	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, "src.go", src, 0)
 	if err != nil {
 		return mock, &ParseFailError{err}
@@ -41,6 +41,7 @@ func New(src io.Reader, name string) (mock Mock, err error) {
 	mock.Methods = make(map[string]Method)
 	mock.Name = name
 	mock.Imports = getImports(f.Imports)
+	mock.Package = f.Name.Name
 
 	ast.Inspect(f, func(n ast.Node) bool {
 		switch x := n.(type) {
