@@ -128,6 +128,31 @@ func TestNew(t *testing.T) {
 				},
 			},
 		},
+		{
+			Name:          "Non primative types",
+			InterfaceName: "Channel",
+			Src: `
+						package main
+						type Channel interface{
+							QueueDeclare(name string, args amqp.Table) (amqp.Queue, error)
+						}
+		`,
+			ExpectedMock: Mock{
+				Name: "Channel",
+				Methods: map[string]Method{
+					"QueueDeclare": {
+						Arguments: []Value{
+							{"name", "string"},
+							{"args", "amqp.Table"},
+						},
+						ReturnValues: []Value{
+							{"", "amqp.Queue"},
+							{"", "error"},
+						},
+					},
+				},
+			},
+		},
 
 		{
 			Name:          "Multiple methods",

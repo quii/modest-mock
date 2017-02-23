@@ -78,7 +78,7 @@ func addMethod(method *ast.Field, name string, mock Mock) {
 func getValues(list *ast.FieldList) (values []Value) {
 	for _, field := range list.List {
 
-		fieldType := fmt.Sprintf("%v", field.Type)
+		fieldType := getType(field)
 
 		if len(field.Names) == 0 {
 			values = append(values, Value{
@@ -93,4 +93,13 @@ func getValues(list *ast.FieldList) (values []Value) {
 		}
 	}
 	return
+}
+
+func getType(field *ast.Field) string {
+	if complex, isComplexType := field.Type.(*ast.SelectorExpr); isComplexType {
+		pkg := complex.X.(*ast.Ident)
+		typ := complex.Sel.Name
+		return fmt.Sprintf("%s.%s", pkg.Name, typ)
+	}
+	return fmt.Sprintf("%v", field.Type)
 }
