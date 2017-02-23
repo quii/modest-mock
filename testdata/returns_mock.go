@@ -8,6 +8,6 @@ type ReturnsMock struct {
 	}
 }
 
-func (r *ReturnsMock) Generate() (number int) {
+func (r *ReturnsMock) Generate() (Number int) {
 	return r.Returns.Generate.Number
 }

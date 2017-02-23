@@ -9,17 +9,17 @@ import (
 const mockStructTemplate = `package {{.Package}}
 
 type {{.Name}}Mock struct {
-{{ if .HasReturnValues -}}
-	Returns struct {
-		{{ range $method, $arguments := .ReturnValues -}}
-		{{ $method }} struct {
-			{{range $arg := $arguments -}}
-			{{ $arg.Name }} {{ $arg.Type }}
-			{{end -}}
+{{ if .HasReturnValues }}{{/*
+*/}}	Returns struct {
+	{{ range $method, $arguments := .ReturnValues }}
+			{{ $method }} struct {
+				{{range $arg := $arguments -}}
+				{{ $arg.Name }} {{ $arg.Type }}
+				{{end }}
+			}
+		{{end}}
 		}
-		{{end -}}
-	}
-{{end -}}
+{{end}}
 }
 `
 
@@ -72,8 +72,8 @@ func generateFields(values []Value) string {
 }
 
 const mockMethodTemplate = `
-func ({{.ReceiverVar}} *{{.Receiver}}) {{.Name}}{{.Arguments}} {
-{{.Returns}}
+func ({{.ReceiverVar}} *{{.Receiver}}) {{.Name}}{{.Arguments}} {{.ReturnArgs}} {
+{{.ReturnStatement}}
 }
 `
 
@@ -87,22 +87,27 @@ func generateMethod(receiver string, methodName string, method Method) (string, 
 	receiverVarName := strings.ToLower(string(receiver[0]))
 
 	returnStatement := ""
+	returnArgs := ""
+
 	if len(method.ReturnValues) > 0 {
 		var returns []string
 		for _, r := range method.ReturnValues {
 			returns = append(returns, receiverVarName+".Returns."+methodName+"."+r.Name)
 		}
 		returnStatement = "\treturn " + strings.Join(returns, ", ")
+
+		returnArgs = generateFields(method.ReturnValues)
 	}
 
 	viewModel := struct {
-		ReceiverVar, Receiver, Name, Arguments, Returns string
+		ReceiverVar, Receiver, Name, Arguments, ReturnStatement, ReturnArgs string
 	}{
-		ReceiverVar: receiverVarName,
-		Receiver:    receiver,
-		Name:        methodName,
-		Arguments:   generateFields(method.Arguments),
-		Returns:     returnStatement,
+		ReceiverVar:     receiverVarName,
+		Receiver:        receiver,
+		Name:            methodName,
+		Arguments:       generateFields(method.Arguments),
+		ReturnStatement: returnStatement,
+		ReturnArgs:      returnArgs,
 	}
 
 	var buffer bytes.Buffer
