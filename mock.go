@@ -40,35 +40,12 @@ func New(src io.Reader, name string) (mock Mock, err error) {
 	mock.Methods = make(map[string]Method)
 	mock.Name = name
 
-	var currentMethodName string
-
 	ast.Inspect(f, func(n ast.Node) bool {
 		switch x := n.(type) {
 
 		case *ast.InterfaceType:
 			for _, method := range x.Methods.List {
-
-				for _, x := range method.Names {
-					currentMethodName = x.Name
-
-					ast.Inspect(method, func(n ast.Node) bool {
-						switch x := n.(type) {
-						case *ast.FuncType:
-
-							m := Method{
-								Arguments: getValues(x.Params),
-							}
-
-							if x.Results != nil {
-								m.ReturnValues = getValues(x.Results)
-							}
-
-							mock.Methods[currentMethodName] = m
-						}
-						return true
-					})
-				}
-
+				addMethod(method, method.Names[0].Name, mock)
 			}
 			return true
 
@@ -77,6 +54,25 @@ func New(src io.Reader, name string) (mock Mock, err error) {
 	})
 
 	return
+}
+
+func addMethod(method *ast.Field, name string, mock Mock) {
+	ast.Inspect(method, func(n ast.Node) bool {
+		switch x := n.(type) {
+		case *ast.FuncType:
+
+			m := Method{
+				Arguments: getValues(x.Params),
+			}
+
+			if x.Results != nil {
+				m.ReturnValues = getValues(x.Results)
+			}
+
+			mock.Methods[name] = m
+		}
+		return true
+	})
 }
 
 func getValues(list *ast.FieldList) (values []Value) {
