@@ -2,10 +2,10 @@ package modestmock
 
 import (
 	"fmt"
-	"io"
-	"go/token"
-	"go/parser"
 	"go/ast"
+	"go/parser"
+	"go/token"
+	"io"
 )
 
 func New(src io.Reader, name string) (mock Mock, err error) {
@@ -34,8 +34,6 @@ func New(src io.Reader, name string) (mock Mock, err error) {
 			for _, method := range x.Methods.List {
 				addMethod(method, method.Names[0].Name, mock)
 			}
-			return true
-
 		}
 		return true
 	})
