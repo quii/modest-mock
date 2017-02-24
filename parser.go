@@ -42,7 +42,6 @@ func New(src io.Reader, name string) (mock Mock, err error) {
 }
 
 func getImports(importSpec []*ast.ImportSpec) (imports []string) {
-
 	for _, i := range importSpec {
 		imports = append(imports, i.Path.Value)
 	}
