@@ -1,7 +1,13 @@
 package modestmock
 
+import "fmt"
+
 type Value struct {
 	Name, Type string
+}
+
+func (v Value) AsCodeDeclaration() string {
+	return fmt.Sprintf("%s %s", v.Name, v.Type)
 }
 
 type Method struct {

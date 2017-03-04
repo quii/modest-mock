@@ -7,7 +7,9 @@ import (
 	"text/template"
 )
 
-const mockStructTemplate = `package {{.Package}}
+const mockStructTemplate = `
+
+package {{.Package}}
 
 type {{.Name}}Mock struct {
 
@@ -15,22 +17,22 @@ Calls struct {
 {{ range $name, $method := .Methods }}
 	{{ $name }} []struct {
 		{{range $arg := $method.Arguments }}
-			{{ $arg.Name }} {{ $arg.Type }}
+			{{ $arg.AsCodeDeclaration }}
 		{{end}}
 	}
 {{end}}
 }
 
-{{ if .HasReturnValues }}{{/*
-*/}}	Returns struct {
-	{{ range $method, $arguments := .ReturnValues }}
-			{{ $method }} struct {
-				{{range $arg := $arguments -}}
-				{{ $arg.Name }} {{ $arg.Type }}
-				{{end }}
-			}
-		{{end}}
+{{ if .HasReturnValues }}
+Returns struct {
+	{{ range $name, $method := .Methods }}
+		{{ $name }} []struct {
+			{{range $arg := $method.ReturnValues }}
+				{{ $arg.AsCodeDeclaration }}
+			{{end}}
 		}
+	{{end}}
+}
 {{end}}
 }
 `
@@ -111,7 +113,7 @@ func generateMethod(receiver string, methodName string, method Method) (string, 
 	if len(method.ReturnValues) > 0 {
 		var returns []string
 		for _, r := range method.ReturnValues {
-			returns = append(returns, receiverVarName+".Returns."+methodName+"."+r.Name)
+			returns = append(returns, receiverVarName+".Returns."+methodName+"[0]."+r.Name)
 		}
 		returnStatement = "\treturn " + strings.Join(returns, ", ")
 
