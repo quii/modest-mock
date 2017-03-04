@@ -2,6 +2,7 @@ package modestmock
 
 import (
 	"bytes"
+	"go/format"
 	"strings"
 	"text/template"
 )
@@ -41,7 +42,10 @@ func GenerateMockCode(mock Mock) (string, error) {
 
 	allMethods := strings.Join(methods, "\n")
 
-	return mockStruct + allMethods, err
+	code := mockStruct + allMethods
+
+	formattedCode, err := format.Source([]byte(code))
+	return string(formattedCode), err
 }
 
 func generateMockStruct(mock Mock) (string, error) {
