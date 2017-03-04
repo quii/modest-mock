@@ -32,3 +32,13 @@ func (m *Mock) ReturnValues() map[string][]Value {
 func (m *Mock) HasReturnValues() bool {
 	return len(m.ReturnValues()) > 0
 }
+
+func (m *Mock) Arguments() map[string][]Value {
+	arguments := make(map[string][]Value)
+
+	for method, values := range m.Methods {
+		arguments[method] = values.Arguments
+	}
+
+	return arguments
+}

@@ -3,6 +3,7 @@ package modestmock
 import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
+	"go/format"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -32,6 +33,10 @@ func TestGenerateMockCode(t *testing.T) {
 
 		generatedCode, err := GenerateMockCode(mock)
 
+		if err != nil {
+			t.Log("Error generating mock", err)
+		}
+
 		assert.NoError(t, err)
 		assert.Equal(t, expectedMock, generatedCode)
 	}
@@ -50,5 +55,11 @@ func openTestFile(t *testing.T, path string) string {
 		t.Fatal(err)
 	}
 
-	return string(b)
+	formatted, err := format.Source(b)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return string(formatted)
 }

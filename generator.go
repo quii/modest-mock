@@ -10,6 +10,17 @@ import (
 const mockStructTemplate = `package {{.Package}}
 
 type {{.Name}}Mock struct {
+
+Calls struct {
+{{ range $name, $method := .Methods }}
+	{{ $name }} []struct {
+		{{range $arg := $method.Arguments }}
+			{{ $arg.Name }} {{ $arg.Type }}
+		{{end}}
+	}
+{{end}}
+}
+
 {{ if .HasReturnValues }}{{/*
 */}}	Returns struct {
 	{{ range $method, $arguments := .ReturnValues }}
@@ -28,6 +39,10 @@ func GenerateMockCode(mock Mock) (string, error) {
 	receiver := mock.Name + "Mock"
 
 	mockStruct, err := generateMockStruct(mock)
+
+	if err != nil {
+		return "", err
+	}
 
 	var methods []string
 	for name, definition := range mock.Methods {
