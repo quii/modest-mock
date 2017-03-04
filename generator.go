@@ -2,6 +2,7 @@ package modestmock
 
 import (
 	"bytes"
+	"fmt"
 	"go/format"
 	"strings"
 	"text/template"
@@ -94,6 +95,7 @@ func generateFields(values []Value) string {
 
 const mockMethodTemplate = `
 func ({{.ReceiverVar}} *{{.Receiver}}) {{.Name}}{{.Arguments}} {{.ReturnArgs}} {
+{{.RecordCall}}
 {{.ReturnStatement}}
 }
 `
@@ -113,7 +115,7 @@ func generateMethod(receiver string, methodName string, method Method) (string, 
 	if len(method.ReturnValues) > 0 {
 		var returns []string
 		for _, r := range method.ReturnValues {
-			returnIndex := "[len("+receiverVarName+".Calls."+methodName+")]"
+			returnIndex := "[len(" + receiverVarName + ".Calls." + methodName + ")]"
 			returns = append(returns, receiverVarName+".Returns."+methodName+returnIndex+"."+r.Name)
 		}
 		returnStatement = "\treturn " + strings.Join(returns, ", ")
@@ -122,7 +124,7 @@ func generateMethod(receiver string, methodName string, method Method) (string, 
 	}
 
 	viewModel := struct {
-		ReceiverVar, Receiver, Name, Arguments, ReturnStatement, ReturnArgs string
+		ReceiverVar, Receiver, Name, Arguments, ReturnStatement, ReturnArgs, RecordCall string
 	}{
 		ReceiverVar:     receiverVarName,
 		Receiver:        receiver,
@@ -130,6 +132,7 @@ func generateMethod(receiver string, methodName string, method Method) (string, 
 		Arguments:       generateFields(method.Arguments),
 		ReturnStatement: returnStatement,
 		ReturnArgs:      returnArgs,
+		RecordCall:      generateRecordCall(receiverVarName, methodName, method.Arguments),
 	}
 
 	var buffer bytes.Buffer
@@ -137,4 +140,21 @@ func generateMethod(receiver string, methodName string, method Method) (string, 
 
 	return buffer.String(), nil
 
+}
+
+func generateRecordCall(reciever string, method string, arguments []Value) string {
+	var allFields []string
+	var allValues []string
+	for _, arg := range arguments {
+		allValues = append(allValues, arg.Name)
+		allFields = append(allFields, arg.AsCodeDeclaration())
+	}
+
+	call := fmt.Sprintf("call := struct{%s}{%s}", strings.Join(allFields, ","), strings.Join(allValues, ","))
+	callToUpdate := fmt.Sprintf("%s.Calls.%s", reciever, method)
+	updateCall := fmt.Sprintf("%s = append(%s, call)", callToUpdate, callToUpdate)
+
+	code := fmt.Sprintf("%s\n%s", call, updateCall)
+
+	return code
 }

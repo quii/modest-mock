@@ -9,5 +9,7 @@ type StoreMock struct {
 }
 
 func (s *StoreMock) Save(firstname string) {
+	call := struct{ firstname string }{firstname}
+	s.Calls.Save = append(s.Calls.Save, call)
 
 }

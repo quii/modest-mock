@@ -58,7 +58,7 @@ func openTestFile(t *testing.T, path string) string {
 	formatted, err := format.Source(b)
 
 	if err != nil {
-		t.Fatal(err)
+		t.Fatal("error formatting generated code, likely compile fail", err)
 	}
 
 	return string(formatted)
