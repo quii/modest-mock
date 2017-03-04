@@ -14,5 +14,5 @@ type ReturnsMock struct {
 }
 
 func (r *ReturnsMock) Generate() (Number int) {
-	return r.Returns.Generate[0].Number
+	return r.Returns.Generate[len(r.Calls.Generate)].Number
 }

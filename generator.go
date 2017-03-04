@@ -113,7 +113,8 @@ func generateMethod(receiver string, methodName string, method Method) (string, 
 	if len(method.ReturnValues) > 0 {
 		var returns []string
 		for _, r := range method.ReturnValues {
-			returns = append(returns, receiverVarName+".Returns."+methodName+"[0]."+r.Name)
+			returnIndex := "[len("+receiverVarName+".Calls."+methodName+")]"
+			returns = append(returns, receiverVarName+".Returns."+methodName+returnIndex+"."+r.Name)
 		}
 		returnStatement = "\treturn " + strings.Join(returns, ", ")
 
