@@ -34,15 +34,19 @@ func TestATM_NewSession_Checks_Pin(t *testing.T) {
 	}
 
 	if session.accountNumber != accountNumber {
-		t.Error("Account number was not set correctly")
+		t.Error("Account number was not returned as expected, got", session.accountNumber)
 	}
 
 	// demo-ing the "spy" functionality here
+	if len(bank.Calls.CheckPin) != 1 {
+		t.Error("expected Checkpin to be called once but was actually called", len(bank.Calls.CheckPin), "times")
+	}
+
 	if bank.Calls.CheckPin[0].cardNumber != cardNumber {
-		t.Error("Bank was not called with correct card number")
+		t.Error("Bank was not called with correct card number, was called with", bank.Calls.CheckPin[0].cardNumber)
 	}
 
 	if bank.Calls.CheckPin[0].pin != pin {
-		t.Error("Bank was not called with correct pin")
+		t.Error("Bank was not called with correct pin, was called with", bank.Calls.CheckPin[0].pin)
 	}
 }
