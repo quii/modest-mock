@@ -34,7 +34,6 @@ func (b *BankMock) CheckPin(cardNumber int, pin int) (accountNumber int, success
 	}
 
 	panic(fmt.Sprintf("no return values found for args %+v, ive got %+v", call, b.Returns.CheckPin))
-
 }
 
 func (b *BankMock) Deposit(accountNumber string, amount int) (newBalance int, err error) {
@@ -46,7 +45,6 @@ func (b *BankMock) Deposit(accountNumber string, amount int) (newBalance int, er
 	}
 
 	panic(fmt.Sprintf("no return values found for args %+v, ive got %+v", call, b.Returns.Deposit))
-
 }
 
 func (b *BankMock) Withdraw(accountNumber string, amount int) (newBalance int, err error) {
@@ -58,7 +56,16 @@ func (b *BankMock) Withdraw(accountNumber string, amount int) (newBalance int, e
 	}
 
 	panic(fmt.Sprintf("no return values found for args %+v, ive got %+v", call, b.Returns.Withdraw))
+}
 
+type BankMock_WithdrawArgs struct {
+	accountNumber string
+	amount        int
+}
+
+type BankMock_WithdrawReturns struct {
+	newBalance int
+	err        error
 }
 
 type BankMock_CheckPinArgs struct {
@@ -77,16 +84,6 @@ type BankMock_DepositArgs struct {
 }
 
 type BankMock_DepositReturns struct {
-	newBalance int
-	err        error
-}
-
-type BankMock_WithdrawArgs struct {
-	accountNumber string
-	amount        int
-}
-
-type BankMock_WithdrawReturns struct {
 	newBalance int
 	err        error
 }

@@ -15,7 +15,9 @@ func TestATM_NewSession(t *testing.T) {
 		pin := 9999
 
 		// set up mock to return account number when sent correct card number and pin
-		bank.Returns.CheckPin[BankMock_CheckPinArgs{cardNumber, pin}] = BankMock_CheckPinReturns{accountNumber, true}
+		bank.Returns.CheckPin = map[BankMock_CheckPinArgs] BankMock_CheckPinReturns {
+			{cardNumber, pin}: {accountNumber, true},
+		}
 
 		atm := ATM{bank}
 

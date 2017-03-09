@@ -16,4 +16,5 @@ See the tests (todo!) for examples of writing tests using the generated mock.
 ## try it
 
 `$ go generate`
+
 `$ go test`
