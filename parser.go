@@ -6,6 +6,7 @@ import (
 	"go/parser"
 	"go/token"
 	"io"
+	"strconv"
 )
 
 func New(src io.Reader, name string) (mock Mock, err error) {
@@ -38,7 +39,7 @@ func New(src io.Reader, name string) (mock Mock, err error) {
 		case *ast.InterfaceType:
 			if foundInterface {
 				for _, method := range x.Methods.List {
-					addMethod(method, method.Names[0].Name, mock)
+					addMethod(method, method.Names[0].Name, mock, fset)
 
 				}
 				foundInterface = false
@@ -57,17 +58,17 @@ func getImports(importSpec []*ast.ImportSpec) (imports []string) {
 	return
 }
 
-func addMethod(method *ast.Field, name string, mock Mock) {
+func addMethod(method *ast.Field, name string, mock Mock, fset *token.FileSet) {
 	ast.Inspect(method, func(n ast.Node) bool {
 		switch x := n.(type) {
 		case *ast.FuncType:
 
 			m := Method{
-				Arguments: getValues(x.Params),
+				Arguments: getValues(x.Params, fset),
 			}
 
 			if x.Results != nil {
-				m.ReturnValues = getValues(x.Results)
+				m.ReturnValues = getValues(x.Results, fset)
 			}
 
 			mock.Methods[name] = m
@@ -76,10 +77,10 @@ func addMethod(method *ast.Field, name string, mock Mock) {
 	})
 }
 
-func getValues(list *ast.FieldList) (values []Value) {
+func getValues(list *ast.FieldList, fset *token.FileSet) (values []Value) {
 	for _, field := range list.List {
 
-		fieldType := getType(field)
+		fieldType := getType(field, fset)
 
 		if len(field.Names) == 0 {
 			values = append(values, Value{
@@ -96,7 +97,34 @@ func getValues(list *ast.FieldList) (values []Value) {
 	return
 }
 
-func getType(field *ast.Field) string {
+func getType(field *ast.Field, fset *token.FileSet) string {
+
+	if arr, isArr := field.Type.(*ast.ArrayType); isArr {
+
+		len := 0
+
+		if size, isFixedLen := arr.Len.(*ast.BasicLit); isFixedLen {
+			len, _ = strconv.Atoi(size.Value)
+		}
+
+		arrDelc := "[]"
+
+		if len > 0 {
+			arrDelc = fmt.Sprintf("[%d]", len)
+		}
+
+		if basic, isBasic := arr.Elt.(*ast.Ident); isBasic {
+			return fmt.Sprintf("%s%s", arrDelc, basic.Name)
+		}
+
+		if complex, isComplex := arr.Elt.(*ast.SelectorExpr); isComplex {
+			pkg := complex.X.(*ast.Ident)
+			typ := complex.Sel.Name
+			return fmt.Sprintf("%s%s.%s", arrDelc, pkg.Name, typ)
+		}
+
+	}
+
 	if complex, isComplexType := field.Type.(*ast.SelectorExpr); isComplexType {
 		pkg := complex.X.(*ast.Ident)
 		typ := complex.Sel.Name

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"go/format"
+	"log"
 	"strings"
 	"text/template"
 )
@@ -70,6 +71,10 @@ func GenerateMockCode(mock Mock) (string, error) {
 	code := mockStruct + constructor + allMethods + methodTypes
 
 	formattedCode, err := format.Source([]byte(code))
+
+	if err != nil {
+		log.Println(code)
+	}
 
 	return string(formattedCode), err
 

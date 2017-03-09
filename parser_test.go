@@ -39,6 +39,72 @@ func TestNew(t *testing.T) {
 		},
 
 		{
+			Name:          "Slices",
+			InterfaceName: "Store",
+			Src: `
+						package main
+						type Store interface{
+							Save(numbers []int)
+						}
+		`,
+			ExpectedMock: Mock{
+				Name:    "Store",
+				Package: "main",
+				Methods: map[string]Method{
+					"Save": {
+						Arguments: []Value{
+							{"numbers", "[]int"},
+						},
+					},
+				},
+			},
+		},
+
+		{
+			Name:          "Foreign Slices",
+			InterfaceName: "Store",
+			Src: `
+						package main
+						type Store interface{
+							Save(numbers []special.Number)
+						}
+		`,
+			ExpectedMock: Mock{
+				Name:    "Store",
+				Package: "main",
+				Methods: map[string]Method{
+					"Save": {
+						Arguments: []Value{
+							{"numbers", "[]special.Number"},
+						},
+					},
+				},
+			},
+		},
+
+		{
+			Name:          "Foreign arrays",
+			InterfaceName: "Store",
+			Src: `
+						package main
+						type Store interface{
+							Save(numbers [2]special.Number)
+						}
+		`,
+			ExpectedMock: Mock{
+				Name:    "Store",
+				Package: "main",
+				Methods: map[string]Method{
+					"Save": {
+						Arguments: []Value{
+							{"numbers", "[2]special.Number"},
+						},
+					},
+				},
+			},
+		},
+
+		{
 			Name:          "Extraneous interfaces",
 			InterfaceName: "Store",
 			Src: `
