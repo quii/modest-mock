@@ -5,71 +5,88 @@
 
 package example
 
+import "fmt"
+
 type BankMock struct {
 	Calls struct {
-		CheckPin []struct {
-			cardNumber int
+		CheckPin []BankMock_CheckPinArgs
 
-			pin int
-		}
+		Deposit []BankMock_DepositArgs
 
-		Deposit []struct {
-			accountNumber string
-
-			amount int
-		}
-
-		Withdraw []struct {
-			accountNumber string
-
-			amount int
-		}
+		Withdraw []BankMock_WithdrawArgs
 	}
 
 	Returns struct {
-		CheckPin []struct {
-			accountNumber int
+		CheckPin map[BankMock_CheckPinArgs]BankMock_CheckPinReturns
 
-			success bool
-		}
+		Deposit map[BankMock_DepositArgs]BankMock_DepositReturns
 
-		Deposit []struct {
-			newBalance int
-
-			err error
-		}
-
-		Withdraw []struct {
-			newBalance int
-
-			err error
-		}
+		Withdraw map[BankMock_WithdrawArgs]BankMock_WithdrawReturns
 	}
 }
 
 func (b *BankMock) CheckPin(cardNumber int, pin int) (accountNumber int, success bool) {
-	call := struct {
-		cardNumber int
-		pin        int
-	}{cardNumber, pin}
+	call := BankMock_CheckPinArgs{cardNumber, pin}
 	b.Calls.CheckPin = append(b.Calls.CheckPin, call)
-	return b.Returns.CheckPin[len(b.Calls.CheckPin)-1].accountNumber, b.Returns.CheckPin[len(b.Calls.CheckPin)-1].success
+
+	if vals, exists := b.Returns.CheckPin[call]; exists {
+		return vals.accountNumber, vals.success
+	}
+
+	panic(fmt.Sprintf("no return values found for args %+v, ive got %+v", call, b.Returns.CheckPin))
+
 }
 
 func (b *BankMock) Deposit(accountNumber string, amount int) (newBalance int, err error) {
-	call := struct {
-		accountNumber string
-		amount        int
-	}{accountNumber, amount}
+	call := BankMock_DepositArgs{accountNumber, amount}
 	b.Calls.Deposit = append(b.Calls.Deposit, call)
-	return b.Returns.Deposit[len(b.Calls.Deposit)-1].newBalance, b.Returns.Deposit[len(b.Calls.Deposit)-1].err
+
+	if vals, exists := b.Returns.Deposit[call]; exists {
+		return vals.newBalance, vals.err
+	}
+
+	panic(fmt.Sprintf("no return values found for args %+v, ive got %+v", call, b.Returns.Deposit))
+
 }
 
 func (b *BankMock) Withdraw(accountNumber string, amount int) (newBalance int, err error) {
-	call := struct {
-		accountNumber string
-		amount        int
-	}{accountNumber, amount}
+	call := BankMock_WithdrawArgs{accountNumber, amount}
 	b.Calls.Withdraw = append(b.Calls.Withdraw, call)
-	return b.Returns.Withdraw[len(b.Calls.Withdraw)-1].newBalance, b.Returns.Withdraw[len(b.Calls.Withdraw)-1].err
+
+	if vals, exists := b.Returns.Withdraw[call]; exists {
+		return vals.newBalance, vals.err
+	}
+
+	panic(fmt.Sprintf("no return values found for args %+v, ive got %+v", call, b.Returns.Withdraw))
+
+}
+
+type BankMock_CheckPinArgs struct {
+	cardNumber int
+	pin        int
+}
+
+type BankMock_CheckPinReturns struct {
+	accountNumber int
+	success       bool
+}
+
+type BankMock_DepositArgs struct {
+	accountNumber string
+	amount        int
+}
+
+type BankMock_DepositReturns struct {
+	newBalance int
+	err        error
+}
+
+type BankMock_WithdrawArgs struct {
+	accountNumber string
+	amount        int
+}
+
+type BankMock_WithdrawReturns struct {
+	newBalance int
+	err        error
 }

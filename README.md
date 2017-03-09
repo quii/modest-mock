@@ -1,6 +1,6 @@
 # modest mock
 
-modest mock is a tool to create mocks from go interfaces for your tests
+modest mock is a tool to generate type-safe mocks from go interfaces.
 
 # Aims
 

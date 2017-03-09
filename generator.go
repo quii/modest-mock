@@ -9,29 +9,24 @@ import (
 )
 
 const mockStructTemplate = `
+{{ $mock := . }}
 
 package {{.Package}}
+
+import "fmt"
 
 type {{.Name}}Mock struct {
 
 Calls struct {
 {{ range $name, $method := .Methods }}
-	{{ $name }} []struct {
-		{{range $arg := $method.Arguments }}
-			{{ $arg.AsCodeDeclaration }}
-		{{end}}
-	}
+	{{ $name }} []{{$mock.Name}}Mock_{{$name}}Args
 {{end}}
 }
 
 {{ if .HasReturnValues }}
 Returns struct {
 	{{ range $name, $method := .Methods }}
-		{{ $name }} []struct {
-			{{range $arg := $method.ReturnValues }}
-				{{ $arg.AsCodeDeclaration }}
-			{{end}}
-		}
+		{{ $name }} map[{{$mock.Name}}Mock_{{$name}}Args]{{$mock.Name}}Mock_{{$name}}Returns
 	{{end}}
 }
 {{end}}
@@ -60,11 +55,62 @@ func GenerateMockCode(mock Mock) (string, error) {
 
 	allMethods := strings.Join(methods, "\n")
 
-	code := mockStruct + allMethods
+	methodTypes, err := generateArgAndReturnTypes(mock)
+
+	if err != nil {
+		return "", err
+	}
+
+	code := mockStruct + allMethods + methodTypes
 
 	formattedCode, err := format.Source([]byte(code))
 
 	return string(formattedCode), err
+
+}
+
+const methodTypeTemplate = `
+type {{.Name}}Mock_{{.MethodName}}Args struct {
+		{{range $arg := .Method.Arguments }}{{/*
+			*/}}{{- $arg.AsCodeDeclaration }}
+		{{end}}
+}
+
+type {{.Name}}Mock_{{.MethodName}}Returns struct {
+		{{range $arg := .Method.ReturnValues }}{{/*
+			*/}}{{ $arg.AsCodeDeclaration }}
+		{{end}}
+}
+
+`
+
+func generateArgAndReturnTypes(mock Mock) (string, error) {
+	tmpl, err := template.New("methodType").Parse(methodTypeTemplate)
+
+	if err != nil {
+		return "", err
+	}
+
+	var buffer bytes.Buffer
+
+	for name, method := range mock.Methods {
+		viewModel := struct {
+			Name       string
+			MethodName string
+			Method     Method
+		}{
+			mock.Name,
+			name,
+			method,
+		}
+		err = tmpl.Execute(&buffer, viewModel)
+
+		if err != nil {
+			return "", err
+		}
+	}
+
+	return buffer.String(), nil
 }
 
 func generateMockStruct(mock Mock) (string, error) {
@@ -114,12 +160,11 @@ func generateMethod(receiver string, methodName string, method Method) (string, 
 	returnArgs := ""
 
 	if len(method.ReturnValues) > 0 {
-		var returns []string
-		for _, r := range method.ReturnValues {
-			returnIndex := "[len(" + receiverVarName + ".Calls." + methodName + ")-1]"
-			returns = append(returns, receiverVarName+".Returns."+methodName+returnIndex+"."+r.Name)
+		returnStatement, err = generateReturn(receiverVarName, methodName, method.ReturnValues)
+
+		if err != nil {
+			return "", err
 		}
-		returnStatement = "\treturn " + strings.Join(returns, ", ")
 
 		returnArgs = generateFields(method.ReturnValues)
 	}
@@ -133,7 +178,7 @@ func generateMethod(receiver string, methodName string, method Method) (string, 
 		Arguments:       generateFields(method.Arguments),
 		ReturnStatement: returnStatement,
 		ReturnArgs:      returnArgs,
-		RecordCall:      generateRecordCall(receiverVarName, methodName, method.Arguments),
+		RecordCall:      generateRecordCall(receiverVarName, receiver, methodName, method.Arguments),
 	}
 
 	var buffer bytes.Buffer
@@ -143,7 +188,43 @@ func generateMethod(receiver string, methodName string, method Method) (string, 
 
 }
 
-func generateRecordCall(reciever string, method string, arguments []Value) string {
+const returnStatementTmp = `
+	if vals, exists := {{.ReceiverName}}.Returns.{{.MethodName}}[call]; exists {
+		return {{.ReturnStmt}}
+	}
+
+	panic(fmt.Sprintf("no return values found for args %+v, ive got %+v", call, {{.ReceiverName}}.Returns.{{.MethodName}}))`
+
+func generateReturn(receiverName, methodName string, returnVals []Value) (string, error) {
+	tmpl, err := template.New("returns").Parse(returnStatementTmp)
+
+	if err != nil {
+		return "", err
+	}
+
+	var returnValsWithRecievers []string
+
+	for _, v := range returnVals {
+		returnValsWithRecievers = append(returnValsWithRecievers, fmt.Sprintf("vals.%s", v.Name))
+	}
+
+	var buffer bytes.Buffer
+
+	viewModel := struct {
+		ReceiverName string
+		MethodName   string
+		ReturnStmt   string
+	}{
+		receiverName,
+		methodName,
+		strings.Join(returnValsWithRecievers, ","),
+	}
+	err = tmpl.Execute(&buffer, &viewModel)
+
+	return buffer.String(), err
+}
+
+func generateRecordCall(recieverVar, reciever, method string, arguments []Value) string {
 	var allFields []string
 	var allValues []string
 	for _, arg := range arguments {
@@ -151,8 +232,11 @@ func generateRecordCall(reciever string, method string, arguments []Value) strin
 		allFields = append(allFields, arg.AsCodeDeclaration())
 	}
 
-	call := fmt.Sprintf("call := struct{%s}{%s}", strings.Join(allFields, "\n"), strings.Join(allValues, ","))
-	callToUpdate := fmt.Sprintf("%s.Calls.%s", reciever, method)
+	// {{.Name}}Mock_{{.MethodName}}Args
+	methodArgsType := reciever + "_" + method + "Args"
+
+	call := fmt.Sprintf("call := %s{%s}", methodArgsType, strings.Join(allValues, ","))
+	callToUpdate := fmt.Sprintf("%s.Calls.%s", recieverVar, method)
 	updateCall := fmt.Sprintf("%s = append(%s, call)", callToUpdate, callToUpdate)
 
 	code := fmt.Sprintf("%s\n%s", call, updateCall)

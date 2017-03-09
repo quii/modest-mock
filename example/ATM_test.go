@@ -4,7 +4,9 @@ import "testing"
 
 func TestATM_NewSession(t *testing.T) {
 
+	//todo: make NewBankMock() which will new up the maps
 	bank := &BankMock{}
+	bank.Returns.CheckPin = make(map[BankMock_CheckPinArgs]BankMock_CheckPinReturns)
 
 	t.Run("it goes to the bank to check the users pin before starting a session", func(t *testing.T) {
 
@@ -12,17 +14,10 @@ func TestATM_NewSession(t *testing.T) {
 		cardNumber := 12345677
 		pin := 9999
 
-		// set up the bank so the first time it is called then it returns our expected account number
-		//todo: order based stuff sucks, should be based on arguments sent in
-		bank.Returns.CheckPin = []struct{
-			accountNumber int
-			success bool
-		}{
-			{accountNumber, true},
-		}
+		// set up mock to return account number when sent correct card number and pin
+		bank.Returns.CheckPin[BankMock_CheckPinArgs{cardNumber, pin}] = BankMock_CheckPinReturns{accountNumber, true}
 
 		atm := ATM{bank}
-
 
 		session, err := atm.NewSession(cardNumber, pin)
 
