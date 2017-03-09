@@ -106,6 +106,8 @@ func generateConstructor(mock Mock) (string, error) {
 }
 
 const methodTypeTemplate = `
+type {{.Name}}Mock_{{.MethodName}}ReturnsMap map[{{.Name}}Mock_{{.MethodName}}Args]{{.Name}}Mock_{{.MethodName}}Returns
+
 type {{.Name}}Mock_{{.MethodName}}Args struct {
 		{{range $arg := .Method.Arguments }}{{/*
 			*/}}{{- $arg.AsCodeDeclaration }}

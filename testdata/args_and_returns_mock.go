@@ -31,6 +31,8 @@ func (b *BankMock) CheckPin(cardNumber int, pin int) (accountNumber int, success
 	panic(fmt.Sprintf("no return values found for args %+v, ive got %+v", call, b.Returns.CheckPin))
 }
 
+type BankMock_CheckPinReturnsMap map[BankMock_CheckPinArgs]BankMock_CheckPinReturns
+
 type BankMock_CheckPinArgs struct {
 	cardNumber int
 	pin        int

@@ -68,6 +68,8 @@ func (b *BankMock) Withdraw(accountNumber string, amount int) (newBalance int, e
 	panic(fmt.Sprintf("no return values found for args %+v, ive got %+v", call, b.Returns.Withdraw))
 }
 
+type BankMock_CheckPinReturnsMap map[BankMock_CheckPinArgs]BankMock_CheckPinReturns
+
 type BankMock_CheckPinArgs struct {
 	cardNumber int
 	pin        int
@@ -78,6 +80,8 @@ type BankMock_CheckPinReturns struct {
 	success       bool
 }
 
+type BankMock_DepositReturnsMap map[BankMock_DepositArgs]BankMock_DepositReturns
+
 type BankMock_DepositArgs struct {
 	accountNumber string
 	amount        int
@@ -87,6 +91,8 @@ type BankMock_DepositReturns struct {
 	newBalance int
 	err        error
 }
+
+type BankMock_WithdrawReturnsMap map[BankMock_WithdrawArgs]BankMock_WithdrawReturns
 
 type BankMock_WithdrawArgs struct {
 	accountNumber string

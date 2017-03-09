@@ -5,7 +5,7 @@ import "testing"
 func TestATM_NewSession(t *testing.T) {
 
 	bank := NewBankMock()
-	
+
 	t.Run("it goes to the bank to check the users pin before starting a session", func(t *testing.T) {
 
 		accountNumber := 12345678
@@ -13,7 +13,7 @@ func TestATM_NewSession(t *testing.T) {
 		pin := 9999
 
 		// set up mock to return account number when sent correct card number and pin
-		bank.Returns.CheckPin = map[BankMock_CheckPinArgs]BankMock_CheckPinReturns{
+		bank.Returns.CheckPin = BankMock_CheckPinReturnsMap{
 			{cardNumber, pin}: {accountNumber, true},
 		}
 
