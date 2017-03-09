@@ -25,6 +25,16 @@ type BankMock struct {
 	}
 }
 
+func NewBankMock() *BankMock {
+	newMock := new(BankMock)
+
+	newMock.Returns.CheckPin = make(map[BankMock_CheckPinArgs]BankMock_CheckPinReturns)
+	newMock.Returns.Deposit = make(map[BankMock_DepositArgs]BankMock_DepositReturns)
+	newMock.Returns.Withdraw = make(map[BankMock_WithdrawArgs]BankMock_WithdrawReturns)
+
+	return newMock
+}
+
 func (b *BankMock) CheckPin(cardNumber int, pin int) (accountNumber int, success bool) {
 	call := BankMock_CheckPinArgs{cardNumber, pin}
 	b.Calls.CheckPin = append(b.Calls.CheckPin, call)
@@ -58,16 +68,6 @@ func (b *BankMock) Withdraw(accountNumber string, amount int) (newBalance int, e
 	panic(fmt.Sprintf("no return values found for args %+v, ive got %+v", call, b.Returns.Withdraw))
 }
 
-type BankMock_WithdrawArgs struct {
-	accountNumber string
-	amount        int
-}
-
-type BankMock_WithdrawReturns struct {
-	newBalance int
-	err        error
-}
-
 type BankMock_CheckPinArgs struct {
 	cardNumber int
 	pin        int
@@ -84,6 +84,16 @@ type BankMock_DepositArgs struct {
 }
 
 type BankMock_DepositReturns struct {
+	newBalance int
+	err        error
+}
+
+type BankMock_WithdrawArgs struct {
+	accountNumber string
+	amount        int
+}
+
+type BankMock_WithdrawReturns struct {
 	newBalance int
 	err        error
 }

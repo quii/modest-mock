@@ -61,12 +61,48 @@ func GenerateMockCode(mock Mock) (string, error) {
 		return "", err
 	}
 
-	code := mockStruct + allMethods + methodTypes
+	constructor, err := generateConstructor(mock)
+
+	if err != nil {
+		return "", err
+	}
+
+	code := mockStruct + constructor + allMethods + methodTypes
 
 	formattedCode, err := format.Source([]byte(code))
 
 	return string(formattedCode), err
 
+}
+
+const constructorTemplate = `
+{{ $mock := . }}
+func New{{.Name}}Mock() *{{.Name}}Mock {
+	newMock := new({{.Name}}Mock)
+
+	{{ range $name, $method := .Methods }}{{/*
+		*/}}newMock.Returns.{{ $name }} = make(map[{{$mock.Name}}Mock_{{$name}}Args]{{$mock.Name}}Mock_{{$name}}Returns)
+	{{end}}
+	return newMock
+}
+`
+
+func generateConstructor(mock Mock) (string, error) {
+	tmpl, err := template.New("constructor").Parse(constructorTemplate)
+
+	if err != nil {
+		return "", err
+	}
+
+	var buffer bytes.Buffer
+
+	err = tmpl.Execute(&buffer, &mock)
+
+	if err != nil {
+		return "", err
+	}
+
+	return buffer.String(), err
 }
 
 const methodTypeTemplate = `

@@ -4,10 +4,8 @@ import "testing"
 
 func TestATM_NewSession(t *testing.T) {
 
-	//todo: make NewBankMock() which will new up the maps
-	bank := &BankMock{}
-	bank.Returns.CheckPin = make(map[BankMock_CheckPinArgs]BankMock_CheckPinReturns)
-
+	bank := NewBankMock()
+	
 	t.Run("it goes to the bank to check the users pin before starting a session", func(t *testing.T) {
 
 		accountNumber := 12345678
@@ -15,7 +13,7 @@ func TestATM_NewSession(t *testing.T) {
 		pin := 9999
 
 		// set up mock to return account number when sent correct card number and pin
-		bank.Returns.CheckPin = map[BankMock_CheckPinArgs] BankMock_CheckPinReturns {
+		bank.Returns.CheckPin = map[BankMock_CheckPinArgs]BankMock_CheckPinReturns{
 			{cardNumber, pin}: {accountNumber, true},
 		}
 
@@ -27,7 +25,7 @@ func TestATM_NewSession(t *testing.T) {
 			t.Fatal("Didnt expect it to fail")
 		}
 
-		if session==nil {
+		if session == nil {
 			t.Fatal("expected a session")
 		}
 
@@ -42,7 +40,6 @@ func TestATM_NewSession(t *testing.T) {
 		if bank.Calls.CheckPin[0].pin != pin {
 			t.Error("Bank was not called with correct pin")
 		}
-
 
 	})
 }

@@ -12,6 +12,14 @@ type BankMock struct {
 	}
 }
 
+func NewBankMock() *BankMock {
+	newMock := new(BankMock)
+
+	newMock.Returns.CheckPin = make(map[BankMock_CheckPinArgs]BankMock_CheckPinReturns)
+
+	return newMock
+}
+
 func (b *BankMock) CheckPin(cardNumber int, pin int) (accountNumber int, success bool) {
 	call := BankMock_CheckPinArgs{cardNumber, pin}
 	b.Calls.CheckPin = append(b.Calls.CheckPin, call)
