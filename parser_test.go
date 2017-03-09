@@ -39,6 +39,32 @@ func TestNew(t *testing.T) {
 		},
 
 		{
+			Name:          "Extraneous interfaces",
+			InterfaceName: "Store",
+			Src: `
+						package main
+						type Store interface{
+							Save(age int)
+						}
+
+						type NotImportant interface{
+							Yell()
+						}
+		`,
+			ExpectedMock: Mock{
+				Name:    "Store",
+				Package: "main",
+				Methods: map[string]Method{
+					"Save": {
+						Arguments: []Value{
+							{"age", "int"},
+						},
+					},
+				},
+			},
+		},
+
+		{
 			Name:          "No return values, two args same type",
 			InterfaceName: "Store",
 			Src: `
