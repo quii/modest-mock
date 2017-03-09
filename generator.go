@@ -14,7 +14,11 @@ const mockStructTemplate = `
 
 package {{.Package}}
 
-import "fmt"
+import (
+{{ range .Imports }}{{/*
+	*/}}{{.}}
+{{end}}
+)
 
 type {{.Name}}Mock struct {
 
@@ -36,6 +40,8 @@ Returns struct {
 
 func GenerateMockCode(mock Mock) (string, error) {
 	receiver := mock.Name + "Mock"
+
+	mock.Imports = append(mock.Imports, `"fmt"`)
 
 	mockStruct, err := generateMockStruct(mock)
 

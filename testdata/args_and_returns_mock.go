@@ -1,6 +1,8 @@
 package testdata
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type BankMock struct {
 	Calls struct {
