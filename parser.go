@@ -27,12 +27,21 @@ func New(src io.Reader, name string) (mock Mock, err error) {
 	mock.Imports = getImports(f.Imports)
 	mock.Package = f.Name.Name
 
+	foundInterface := false
+
 	ast.Inspect(f, func(n ast.Node) bool {
 		switch x := n.(type) {
 
+		case *ast.Ident:
+			foundInterface = x.Name == name
+
 		case *ast.InterfaceType:
-			for _, method := range x.Methods.List {
-				addMethod(method, method.Names[0].Name, mock)
+			if foundInterface {
+				for _, method := range x.Methods.List {
+					addMethod(method, method.Names[0].Name, mock)
+
+				}
+				foundInterface = false
 			}
 		}
 		return true
