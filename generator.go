@@ -26,7 +26,7 @@ Calls struct {
 {{ if .HasReturnValues }}
 Returns struct {
 	{{ range $name, $method := .Methods }}
-		{{ $name }} map[{{$mock.Name}}Mock_{{$name}}Args]{{$mock.Name}}Mock_{{$name}}Returns
+		{{ $name }} {{$mock.Name}}Mock_{{$name}}ReturnsMap
 	{{end}}
 }
 {{end}}
@@ -81,7 +81,7 @@ func New{{.Name}}Mock() *{{.Name}}Mock {
 	newMock := new({{.Name}}Mock)
 
 	{{ range $name, $method := .Methods }}{{/*
-		*/}}newMock.Returns.{{ $name }} = make(map[{{$mock.Name}}Mock_{{$name}}Args]{{$mock.Name}}Mock_{{$name}}Returns)
+		*/}}newMock.Returns.{{ $name }} = make({{$mock.Name}}Mock_{{$name}}ReturnsMap)
 	{{end}}
 	return newMock
 }

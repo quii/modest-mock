@@ -17,20 +17,20 @@ type BankMock struct {
 	}
 
 	Returns struct {
-		CheckPin map[BankMock_CheckPinArgs]BankMock_CheckPinReturns
+		CheckPin BankMock_CheckPinReturnsMap
 
-		Deposit map[BankMock_DepositArgs]BankMock_DepositReturns
+		Deposit BankMock_DepositReturnsMap
 
-		Withdraw map[BankMock_WithdrawArgs]BankMock_WithdrawReturns
+		Withdraw BankMock_WithdrawReturnsMap
 	}
 }
 
 func NewBankMock() *BankMock {
 	newMock := new(BankMock)
 
-	newMock.Returns.CheckPin = make(map[BankMock_CheckPinArgs]BankMock_CheckPinReturns)
-	newMock.Returns.Deposit = make(map[BankMock_DepositArgs]BankMock_DepositReturns)
-	newMock.Returns.Withdraw = make(map[BankMock_WithdrawArgs]BankMock_WithdrawReturns)
+	newMock.Returns.CheckPin = make(BankMock_CheckPinReturnsMap)
+	newMock.Returns.Deposit = make(BankMock_DepositReturnsMap)
+	newMock.Returns.Withdraw = make(BankMock_WithdrawReturnsMap)
 
 	return newMock
 }

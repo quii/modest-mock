@@ -8,14 +8,14 @@ type BankMock struct {
 	}
 
 	Returns struct {
-		CheckPin map[BankMock_CheckPinArgs]BankMock_CheckPinReturns
+		CheckPin BankMock_CheckPinReturnsMap
 	}
 }
 
 func NewBankMock() *BankMock {
 	newMock := new(BankMock)
 
-	newMock.Returns.CheckPin = make(map[BankMock_CheckPinArgs]BankMock_CheckPinReturns)
+	newMock.Returns.CheckPin = make(BankMock_CheckPinReturnsMap)
 
 	return newMock
 }
