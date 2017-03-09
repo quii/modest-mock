@@ -15,9 +15,7 @@ const mockStructTemplate = `
 package {{.Package}}
 
 import (
-{{ range .Imports }}{{/*
-	*/}}{{.}}
-{{end}}
+	"fmt"
 )
 
 type {{.Name}}Mock struct {

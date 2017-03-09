@@ -18,7 +18,6 @@ func TestGenerateMockCode(t *testing.T) {
 		expectedMockPath string
 	}{
 		{"Bank", "args_and_returns.go", "args_and_returns_mock.go"},
-		{"Clock", "imports.go", "imports_mock.go"},
 	}
 
 	for _, s := range scenarios {
