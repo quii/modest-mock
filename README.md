@@ -41,6 +41,8 @@ if mockStore.Calls.Save[0].firstname != "expected firstname" {
 
 This will send the generated code to stdout so you can pipe it to a file.
 
-### using go generate
+### Using go generate
 
 `//go:generate modestmock -name=Bank -out=bank_mock.go`
+
+Have a look at the `example` directory for a real world-ish example. 
