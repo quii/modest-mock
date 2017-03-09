@@ -63,6 +63,7 @@ func GenerateMockCode(mock Mock) (string, error) {
 	code := mockStruct + allMethods
 
 	formattedCode, err := format.Source([]byte(code))
+
 	return string(formattedCode), err
 }
 
@@ -115,7 +116,7 @@ func generateMethod(receiver string, methodName string, method Method) (string, 
 	if len(method.ReturnValues) > 0 {
 		var returns []string
 		for _, r := range method.ReturnValues {
-			returnIndex := "[len(" + receiverVarName + ".Calls." + methodName + ")]"
+			returnIndex := "[len(" + receiverVarName + ".Calls." + methodName + ")-1]"
 			returns = append(returns, receiverVarName+".Returns."+methodName+returnIndex+"."+r.Name)
 		}
 		returnStatement = "\treturn " + strings.Join(returns, ", ")
@@ -150,7 +151,7 @@ func generateRecordCall(reciever string, method string, arguments []Value) strin
 		allFields = append(allFields, arg.AsCodeDeclaration())
 	}
 
-	call := fmt.Sprintf("call := struct{%s}{%s}", strings.Join(allFields, ","), strings.Join(allValues, ","))
+	call := fmt.Sprintf("call := struct{%s}{%s}", strings.Join(allFields, "\n"), strings.Join(allValues, ","))
 	callToUpdate := fmt.Sprintf("%s.Calls.%s", reciever, method)
 	updateCall := fmt.Sprintf("%s = append(%s, call)", callToUpdate, callToUpdate)
 

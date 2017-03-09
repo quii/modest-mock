@@ -5,9 +5,7 @@ modest mock is a tool to create mocks from go interfaces for your tests
 # Aims
 
 - *Simple* - the usage is just `PATH_TO_INTERFACE` `NAME_OF_INTERFACE`
-- *Type safe* - You are using Go because you like static checking, you
-  shouldn't have to give that up in your tests so no reflection or
-`interface{}`
+- *Type safe* - You are using Go because you like static checking, you shouldn't have to give that up in your tests so no reflection, magic strings or `interface{}`
 - *Not a framework*, it does not prescribe how you write your tests
 - No dependencies required in your app, just generate the code once.
 - Easy to use assertions
@@ -28,13 +26,21 @@ mockStore := NewMockStore()
 thingUnderTest := NewThing(mockStore)
 thing.DoIt("expected firstname", "smith")
 
-if mockStore.Calls.Save.firstname != "expected firstname" {
-  t.Error("Didnt't call Store with correct firstname")
+if mockStore.Calls.Save[0].firstname != "expected firstname" {
+  t.Error("Didnt't call Store with correct firstname on the first call")
 }
 ```
 
-- Easy to set return values too
+## Usage
 
-`mockStore.Returns.Save.err = errors.New("Simulating save failure")`
+`go get github.com/quii/modest-mock/cmd/modestmock`
 
-I haven't written anything yet, but aspirations are nice.
+### On the command line
+
+`modestmock -path=$PATH_TO_FILE_WITH_INTERFACE -name=$NAME_OF_INTERFACE`
+
+This will send the generated code to stdout so you can pipe it to a file.
+
+### using go generate
+
+`//go:generate modestmock -name=Bank -out=bank_mock.go`
